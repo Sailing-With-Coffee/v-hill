@@ -1,6 +1,8 @@
 module main
 
+import io
 import net
+import gamenet.uintv
 
 
 /*
@@ -13,9 +15,39 @@ rn this is just to test shit, havent started really making this a usable codebas
 fn main() {
 	mut server := net.listen_tcp(.ip, '0.0.0.0:42480')!
 	addr := server.addr()!
-	println('Listening on ${addr}')
+	println('Listening on port 42480.')
+	println('Running server locally.')
+	// TODO: Implement settings
 	for {
 		mut socket := server.accept()!
-		println('New client')
+		spawn handle_client(mut socket)
+	}
+}
+
+
+fn handle_client(mut socket net.TcpConn) {
+	defer {
+		socket.close() or { panic(err) }
+	}
+
+	client_addr := socket.peer_addr() or { return }
+	println('<New client: ${client_addr}>')
+
+	mut reader := io.new_buffered_reader(reader: socket)
+	defer {
+		unsafe {
+			reader.free()
+		}
+	}
+
+	for {
+		mut buffer := []u8{len: 4096}
+		received_len := reader.read(mut buffer) or { return }
+
+		received_size, end := uintv.read_uint_v(buffer) or { return }
+		
+		println('<${client_addr}>: ${received_len} bytes')
+		println('<${client_addr}>: received_size ${received_size} bytes')
+		println('<${client_addr}>: end ${end} bytes')
 	}
 }
