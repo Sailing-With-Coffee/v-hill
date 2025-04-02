@@ -1,8 +1,10 @@
 module main
 
 import io
+import compress.zlib
 import net
 import gamenet.uintv
+import gamenet.packethandler
 
 
 /*
@@ -41,13 +43,18 @@ fn handle_client(mut socket net.TcpConn) {
 	}
 
 	for {
-		mut buffer := []u8{len: 4096}
-		received_len := reader.read(mut buffer) or { return }
+		mut available_data := []u8{len: 4096}
+		len := reader.read(mut available_data) or { return }
+		received_size, end := uintv.read_uint_v(available_data) or { return }
+		available_data = available_data[end..len]
 
-		received_size, end := uintv.read_uint_v(buffer) or { return }
+		mut buffer := zlib.decompress(available_data) or { available_data }
 		
-		println('<${client_addr}>: ${received_len} bytes')
+		println('<${client_addr}>: ${len} bytes')
 		println('<${client_addr}>: received_size ${received_size} bytes')
 		println('<${client_addr}>: end ${end} bytes')
+
+		println('<${client_addr}>: packet_data: ${buffer}')
+		packethandler.handle_packet(mut socket, buffer)
 	}
 }

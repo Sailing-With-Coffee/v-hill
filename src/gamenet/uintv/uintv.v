@@ -3,7 +3,7 @@ module uintv
 
 pub fn read_uint_v(buffer []u8) ?(int, int) {
     if buffer.len == 0 {
-        error('Buffer is empty')
+		error('Buffer is empty')
 		return none
     }
 
@@ -14,7 +14,7 @@ pub fn read_uint_v(buffer []u8) ?(int, int) {
     // 2 Bytes
     else if buffer[0] & 2 != 0 {
         if buffer.len < 2 {
-            error('Buffer too small for 2-byte read')
+        	error('Buffer too small for 2-byte read')
 			return none
         }
         msg_size := ((u16(buffer[0]) | (u16(buffer[1]) << 8)) >> 2) + 0x80
@@ -23,7 +23,7 @@ pub fn read_uint_v(buffer []u8) ?(int, int) {
     // 3 Bytes
     else if buffer[0] & 4 != 0 {
         if buffer.len < 3 {
-            error('Buffer too small for 3-byte read')
+        	error('Buffer too small for 3-byte read')
 			return none
         }
         msg_size := (int(buffer[2]) << 13) + (int(buffer[1]) << 5) + (int(buffer[0]) >> 3) + 0x4080
@@ -32,7 +32,7 @@ pub fn read_uint_v(buffer []u8) ?(int, int) {
     // 4 Bytes
     else {
         if buffer.len < 4 {
-            error('Buffer too small for 4-byte read')
+        	error('Buffer too small for 4-byte read')
 			return none
         }
         msg_size := (int(buffer[0]) | (int(buffer[1]) << 8) | (int(buffer[2]) << 16) | (int(buffer[3]) << 24)) / 8 + 0x204080
@@ -41,7 +41,7 @@ pub fn read_uint_v(buffer []u8) ?(int, int) {
 }
 
 pub fn write_uint_v(buffer []u8) []u8 {
-	mut buf := []u8
+	mut buf := []u8{}
     length := buffer.len
 	
 
