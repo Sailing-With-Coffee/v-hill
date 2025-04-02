@@ -50,11 +50,11 @@ fn handle_client(mut socket net.TcpConn) {
 
 		mut buffer := zlib.decompress(available_data) or { available_data }
 		
-		println('<${client_addr}>: ${len} bytes')
+		/*println('<${client_addr}>: ${len} bytes')
 		println('<${client_addr}>: received_size ${received_size} bytes')
 		println('<${client_addr}>: end ${end} bytes')
 
-		println('<${client_addr}>: packet_data: ${buffer}')
+		println('<${client_addr}>: packet_data: ${buffer}')*/
 		packethandler.handle_packet(mut socket, buffer)
 	}
 }
