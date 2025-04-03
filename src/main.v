@@ -3,6 +3,7 @@ module main
 import io
 import compress.zlib
 import net
+import config
 import gamenet.uintv
 import gamenet.packethandler
 
@@ -15,11 +16,21 @@ rn this is just to test shit, havent started really making this a usable codebas
 
 
 fn main() {
-	mut server := net.listen_tcp(.ip, '0.0.0.0:42480')!
+	game_info := config.load_config() or { panic("[ERROR]: Failed to retrieve config") }
+	mut bind_addr := '0.0.0.0:${game_info.port}'
+
+	println('Listening on port ${game_info.port}.')
+
+	if game_info.local {
+		bind_addr = '127.0.0.1:${game_info.port}'
+		println('Running server locally.')
+	}
+
+
+	mut server := net.listen_tcp(.ip, bind_addr)!
 	addr := server.addr()!
-	println('Listening on port 42480.')
-	println('Running server locally.')
-	// TODO: Implement settings
+	
+	
 	for {
 		mut socket := server.accept()!
 		spawn handle_client(mut socket)
@@ -49,12 +60,6 @@ fn handle_client(mut socket net.TcpConn) {
 		available_data = available_data[end..len]
 
 		mut buffer := zlib.decompress(available_data) or { available_data }
-		
-		/*println('<${client_addr}>: ${len} bytes')
-		println('<${client_addr}>: received_size ${received_size} bytes')
-		println('<${client_addr}>: end ${end} bytes')
-
-		println('<${client_addr}>: packet_data: ${buffer}')*/
 		packethandler.handle_packet(mut socket, buffer)
 	}
 }

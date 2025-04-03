@@ -18,7 +18,7 @@ enum ClientPacketType as u8 {
 
 pub fn handle_packet(mut socket net.TcpConn, packet_data []u8) {
 	packet_type := ClientPacketType.from(packet_data[0]) or {
-		println('Invalid packet type: ${packet_data[0]}')
+		println('[WARNING]: Invalid packet type: ${packet_data[0]}')
 		return
 	}
 
@@ -58,6 +58,6 @@ fn handle_authentication(mut socket net.TcpConn, data []u8) {
 	}
 
 	// Print the token and version as strings
-	println('Token: ${token.bytestr()}')
-	println('Version: ${version.bytestr()}')
+	println('[DEBUG]: Token: ${token.bytestr()}')
+	println('[DEBUG]: Version: ${version.bytestr()}')
 }
