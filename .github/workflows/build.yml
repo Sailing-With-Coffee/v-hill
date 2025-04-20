@@ -24,7 +24,7 @@ jobs:
 
       - name: Build V project (Windows)
         run: |
-          v -os windows -o v-hill.exe src
+          v -enable-globals -os windows -o v-hill.exe src
 
       - name: Upload Windows EXE
         uses: actions/upload-artifact@v4
@@ -62,7 +62,7 @@ jobs:
               cd v && make && \
               export PATH=\$PWD:\$PATH && \
               cd /project && \
-              v -os linux -o v-hill-${{ matrix.arch }} src"
+              v -enable-globals -os linux -o v-hill-${{ matrix.arch }} src"
 
       - name: Upload Linux Binary
         uses: actions/upload-artifact@v4
