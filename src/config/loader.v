@@ -7,10 +7,10 @@ import json
 pub struct Config {
 pub mut:
 	// The host key for game authentication
-	host_key string = ''
+	host_key string
 
 	// The game ID
-	game_id int = 0
+	game_id int
 
 	// The port the server will listen on
 	port int = 42480

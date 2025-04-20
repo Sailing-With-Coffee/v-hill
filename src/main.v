@@ -6,6 +6,7 @@ import net
 import config
 import gamenet.uintv
 import gamenet.packethandler
+import players
 
 
 /*
