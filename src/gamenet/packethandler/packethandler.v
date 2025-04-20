@@ -3,6 +3,11 @@ module packethandler
 
 import net
 import io
+import config
+import players
+
+
+__global connected_players = []players.Player{}
 
 
 enum ClientPacketType as u8 {
@@ -14,6 +19,7 @@ enum ClientPacketType as u8 {
 	player_input
 	heartbeat = 18
 }
+
 
 
 pub fn handle_packet(mut socket net.TcpConn, packet_data []u8) {
@@ -60,4 +66,34 @@ fn handle_authentication(mut socket net.TcpConn, data []u8) {
 	// Print the token and version as strings
 	println('[DEBUG]: Token: ${token.bytestr()}')
 	println('[DEBUG]: Version: ${version.bytestr()}')
+
+	// Check if the token is valid
+	game_info := config.get_config()
+	if game_info.local {
+		// Check if the token is 'local'
+		if token.bytestr() != 'local' {
+			println('[WARNING]: Invalid token.')
+			socket.close() or { panic(err) }
+			return
+		}
+
+		// User is authenticated, create a new player and add them to the connected players list
+		mut new_net_id := connected_players.len + 1
+		mut player := players.Player.new(new_net_id, socket)
+
+		player.username = 'Player${new_net_id}'
+		player.user_id = new_net_id
+		player.admin = false
+		player.position = [0.0, 0.0, 0.0]
+		player.rotation = [0.0, 0.0, 0.0]
+		player.scale = [1.0, 1.0, 1.0]
+
+		connected_players << player
+
+		println('Successfully verified! (Username: ${player.username} | ID: ${player.user_id} | Admin: ${player.admin})')
+	}else{
+		// Just kick the client, we haven't implemented the auth system yet
+		socket.close() or { panic(err) }
+		return
+	}
 }

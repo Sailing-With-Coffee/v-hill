@@ -25,6 +25,9 @@ pub mut:
 	map_name string = 'example.brk'
 }
 
+__global server_config Config
+
+
 
 // Load the config from a JSON file
 pub fn load_config() ?Config {
@@ -38,4 +41,14 @@ pub fn load_config() ?Config {
 		println('[WARNING]: No config file found. Using default values.')
 	}
 	return settings
+}
+
+pub fn get_config() Config {
+	return server_config
+}
+
+fn init() {
+	// Load the config file and set the global config variable
+	server_config = load_config() or { panic(err) }
+	println('Server config initialized.')
 }

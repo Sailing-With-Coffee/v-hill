@@ -4,40 +4,51 @@ module players
 import net
 
 
-struct Player {
-	avatar_loaded bool
+pub struct Player {
+	net_id int
+	socket net.TcpConn
+pub mut:
 	admin bool
+	avatar_loaded bool
 	alive bool
 	assets []int
 	authenticated bool
 	blocked_users []int
-	camera_distance f32
-	camera_fov f32
-	camera_object &Player
-	camera_position []f32
-	camera_rotation []f32
+	camera_distance int = 5
+	camera_fov int = 60
+	camera_object int
+	camera_position []f64
+	camera_rotation []f64
 	camera_type int
 	chat_color string
-	client int
-	colors []string
+	colors []string = ["#d9bc00", "#d9bc00", "#d9bc00", "#d9bc00", "#d9bc00", "#d9bc00"]
 	destroyed bool
-	health int
+	health int = 100
 	inventory []int
-	jump_power int
-	load_avatar bool
-	load_tool bool
-	max_health int
+	jump_power int = 5
+	load_avatar bool = true
+	load_tool bool = true
+	max_health int = 100
 	membership_type int
 	muted bool
-	net_id int
-	position []f32
-	rotation []f32
-	scale []f32
+	position []f64
+	rotation []f64
+	scale []f64
 	score int
-	socket net.TcpConn
 	speech string
-	speed int
+	speed int = 4
 	user_id int
 	username string
-	validation_token string
+}
+
+
+pub fn Player.new(net_id int, socket net.TcpConn) Player {
+	return Player{
+		socket: socket
+		net_id: net_id		
+	}
+}
+
+pub fn (p Player) get_net_id() int {
+	return p.net_id
 }

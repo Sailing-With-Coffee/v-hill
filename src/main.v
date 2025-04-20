@@ -17,7 +17,8 @@ rn this is just to test shit, havent started really making this a usable codebas
 
 
 fn main() {
-	game_info := config.load_config() or { panic("[ERROR]: Failed to retrieve config") }
+	//game_info := config.load_config() or { panic("[ERROR]: Failed to retrieve config") }
+	game_info := config.get_config()
 	mut bind_addr := '0.0.0.0:${game_info.port}'
 
 	println('Listening on port ${game_info.port}.')
