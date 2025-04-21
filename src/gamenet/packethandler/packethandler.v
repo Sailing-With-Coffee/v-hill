@@ -5,6 +5,7 @@ import net
 import io
 import config
 import players
+import gamenet.packetbuilder
 
 
 __global connected_players = []players.Player{}
@@ -91,6 +92,24 @@ fn handle_authentication(mut socket net.TcpConn, data []u8) {
 		connected_players << player
 
 		println('Successfully verified! (Username: ${player.username} | ID: ${player.user_id} | Admin: ${player.admin})')
+
+
+		// Send the player a packet to let them know they are authenticated
+		mut packet := packetbuilder.PacketBuilder.new("authentication", false) or { panic(err) }
+		packet.write_uint32(u32(new_net_id))
+		packet.write_uint32(0) // Brick count
+		packet.write_uint32(u32(player.user_id)) // User ID
+		packet.write_string(player.username) // Username
+		packet.write_bool(player.admin) // Admin status
+		packet.write_u8(u8(player.membership_type)) // Membership type
+		packet.write_uint32(0) // Game ID (unused for now)
+		packet.write_string('V-Hill Testing') // Game name (unused for now)
+
+		to_send := packet.prepare_data_for_sending()
+		
+		// Print the bytes of the packet
+		println('[DEBUG]: Packet bytes: ${to_send}')
+		socket.write(to_send) or { panic(err) }
 	}else{
 		// Just kick the client, we haven't implemented the auth system yet
 		socket.close() or { panic(err) }
